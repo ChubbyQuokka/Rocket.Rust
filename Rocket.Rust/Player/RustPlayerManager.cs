@@ -67,7 +67,7 @@ namespace Rocket.Rust.Player
             }
         }
 
-        public IPlayer GetPlayer(ulong uniqueID)
+        IPlayer GetPlayer(ulong uniqueID)
         {
             BasePlayer basePlayer = 
                 BasePlayer.activePlayerList.FirstOrDefault(x => x.userID == uniqueID) ?? 
@@ -81,7 +81,7 @@ namespace Rocket.Rust.Player
             return new RustPlayer(basePlayer);
         }
 
-        public bool TryGetPlayer(ulong uniqueID, out IPlayer output)
+        bool TryGetPlayer(ulong uniqueID, out IPlayer output)
         {
             BasePlayer basePlayer = 
                 BasePlayer.activePlayerList.Where(x => x.userID == uniqueID).FirstOrDefault() ?? 
