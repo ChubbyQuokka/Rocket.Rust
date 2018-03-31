@@ -7,7 +7,6 @@ using System.Reflection;
 
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using Rocket.Rust.Runtime;
 
 namespace Rocket.Rust.Launcher
 {
@@ -15,7 +14,7 @@ namespace Rocket.Rust.Launcher
     {
         static string RocketDir => Path.Combine(Directory.GetCurrentDirectory(), "Rocket", "Binaries");
         static string RustDir => Path.Combine(Directory.GetCurrentDirectory(), "RustDedicated_Data", "Managed");
-        
+
         static Program()
         {
             AppDomain.CurrentDomain.AssemblyResolve += delegate (object sender, ResolveEventArgs args)
@@ -49,7 +48,7 @@ namespace Rocket.Rust.Launcher
                 }
             };
         }
-        
+
 
         static void Main(string[] args)
         {
@@ -64,14 +63,12 @@ namespace Rocket.Rust.Launcher
 
                 if (rustInit.Body.Instructions[0].OpCode != OpCodes.Call)
                 {
-                    AssemblyDefinition mscorlib = AssemblyDefinition.ReadAssembly(Assembly.GetAssembly(typeof(object)).Location);
-
                     ILProcessor processor = rustInit.Body.GetILProcessor();
 
                     //After trying 3,000 different ways to call it, I finally decided on reflection because of a weird AssemblyResolveException I was getting.
                     Instruction[] loadRocketAssembly = new Instruction[]
                     {
-                        //Add the CurrentDirectory and the directory for Rocket.Rust.dll to the stack
+                        //Add the strings to combine
                         processor.Create(OpCodes.Call, rustInit.Module.ImportReference(typeof(Directory).GetMethod("GetCurrentDirectory"))),
                         processor.Create(OpCodes.Ldstr, @"Rocket\Binaries\Rocket.Rust.dll"),
                         //Run Path.Combine
@@ -83,7 +80,7 @@ namespace Rocket.Rust.Launcher
                         processor.Create(OpCodes.Callvirt, rustInit.Module.ImportReference(typeof(Assembly).GetMethod("GetType", new Type[]{ typeof(string) }))),
                         //Load the name of the method to call
                         processor.Create(OpCodes.Ldstr, "Initialize"),
-                        //Load 24 on the stack (BindingFlags.Static | BindingFlags.Public)
+                        //Load 24 onto the stack (BindingFlags.Static | BindingFlags.Public)
                         processor.Create(OpCodes.Ldc_I4_S, (sbyte)24),
                         //Load the target method onto the stack
                         processor.Create(OpCodes.Callvirt, rustInit.Module.ImportReference(typeof(Type).GetMethod("GetMethod", new Type[] { typeof(string), typeof(BindingFlags) }))),
@@ -92,7 +89,7 @@ namespace Rocket.Rust.Launcher
                         processor.Create(OpCodes.Ldnull),
                         //Make this mother fucking reflection call
                         processor.Create(OpCodes.Callvirt, rustInit.Module.ImportReference(typeof(MethodBase).GetMethod("Invoke", new Type[] { typeof(object), typeof(object[]) }))),
-                        //Make the stack explode
+                        //Get that ugly object reference of my stack that the stupid Invoke method returned. (100% null)
                         processor.Create(OpCodes.Pop)
 
                     };
@@ -119,7 +116,7 @@ namespace Rocket.Rust.Launcher
                 stream.Dispose();
             }
 
-            //Process.Start(Path.Combine(Directory.GetCurrentDirectory(), "RustDedicated.exe"), "-batchmode -nographics");
+            Process.Start(Path.Combine(Directory.GetCurrentDirectory(), "RustDedicated.exe"), "-batchmode");
         }
 
         static string CultureToString(CultureInfo culture)
