@@ -57,6 +57,8 @@ namespace Rocket.Rust.Launcher
             try
             {
                 AssemblyDefinition rust = AssemblyDefinition.ReadAssembly(stream);
+
+                //TODO: Find a different method to attach to AFTER the console has been allocated. (only a Windows problem)
                 MethodDefinition rustInit = rust.MainModule.Types.First(x => x.FullName.Equals("Bootstrap")).Methods.First(x => x.Name.Equals("Init_Systems"));
 
                 if (rustInit.Body.Instructions[0].OpCode != OpCodes.Call)
@@ -125,7 +127,7 @@ namespace Rocket.Rust.Launcher
             }
 
             var newArgs = args.ToList();
-            newArgs.Add("-nographics");
+            newArgs.Add("-batchmode");
 
             Process.Start(Path.Combine(Directory.GetCurrentDirectory(), "RustDedicated.exe"), string.Join(" ", newArgs));
             Console.WriteLine("Your Rust instance has been created, this window exit soon.");

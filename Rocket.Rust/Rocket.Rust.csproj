@@ -98,6 +98,10 @@
       <Project>{DA356ABB-AA77-4B22-9AB1-34A30CF4048A}</Project>
       <Name>Rocket.API</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Rocket\Rocket.Runtime\Rocket.Runtime.csproj">
+      <Project>{5d260f94-bb23-4397-94df-ba4af0cd8bcb}</Project>
+      <Name>Rocket.Runtime</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
