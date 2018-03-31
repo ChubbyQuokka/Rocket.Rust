@@ -10,8 +10,7 @@ namespace Rocket.Rust.Player
         #region IPlayer Implementation
         public string UniqueID => CSteamID.ToString();
         public string DisplayName => Player.displayName;
-        public string IsAdmin => "";
-        //public bool IsAdmin => Player.IsAdmin;
+        public bool IsAdmin => Player.IsAdmin;
         #endregion
             
         public ulong CSteamID => Player.userID;

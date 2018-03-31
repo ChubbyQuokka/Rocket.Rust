@@ -2,6 +2,8 @@
 
 using Rocket.API;
 using Rocket.API.DependencyInjection;
+using Rocket.API.Player;
+using Rocket.Rust.Player;
 
 namespace Rocket.Rust
 {
@@ -10,6 +12,7 @@ namespace Rocket.Rust
         public void Register(IDependencyContainer container, IDependencyResolver resolver)
         {
             container.RegisterSingletonInstance<IImplementation>(container.Activate<Rust>());
+            container.RegisterType<IPlayerManager, RustPlayerManager>();
         }
     }
 }
