@@ -10,7 +10,7 @@ namespace Rocket.Rust
     public class Rust : IImplementation
     {
         public IEnumerable<string> Capabilities => new string[] { "NADA" };
-        public string InstanceId => "Rocket.Rust";
+        public string InstanceId => ConVar.Server.identity;
 
         public Rust(IDependencyContainer container, IDependencyResolver resolver, ILogger logger)
         {
@@ -19,12 +19,12 @@ namespace Rocket.Rust
 
         public void Reload()
         {
-            
+
         }
 
         public void Shutdown()
         {
-            
+
         }
     }
 }

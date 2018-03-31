@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -32,74 +32,57 @@
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>RustBinaries\Assembly-CSharp.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
+    <Reference Include="System" />
     <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>RustBinaries\Assembly-CSharp-firstpass.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>lib\Assembly-CSharp-firstpass.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>lib\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="Facepunch.Console">
-      <HintPath>RustBinaries\Facepunch.Console.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>lib\Facepunch.Console.dll</HintPath>
     </Reference>
     <Reference Include="Facepunch.Input">
-      <HintPath>RustBinaries\Facepunch.Input.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>lib\Facepunch.Input.dll</HintPath>
     </Reference>
     <Reference Include="Facepunch.Network">
-      <HintPath>RustBinaries\Facepunch.Network.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>lib\Facepunch.Network.dll</HintPath>
     </Reference>
     <Reference Include="Facepunch.Raknet">
-      <HintPath>RustBinaries\Facepunch.Raknet.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>lib\Facepunch.Raknet.dll</HintPath>
     </Reference>
     <Reference Include="Facepunch.Rcon">
-      <HintPath>RustBinaries\Facepunch.Rcon.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>lib\Facepunch.Rcon.dll</HintPath>
     </Reference>
     <Reference Include="Facepunch.Sqlite">
-      <HintPath>RustBinaries\Facepunch.Sqlite.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>lib\Facepunch.Sqlite.dll</HintPath>
     </Reference>
     <Reference Include="Facepunch.Steamworks">
-      <HintPath>RustBinaries\Facepunch.Steamworks.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>lib\Facepunch.Steamworks.dll</HintPath>
     </Reference>
     <Reference Include="Facepunch.System">
-      <HintPath>RustBinaries\Facepunch.System.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>lib\Facepunch.System.dll</HintPath>
     </Reference>
     <Reference Include="Facepunch.Unity">
-      <HintPath>RustBinaries\Facepunch.Unity.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>lib\Facepunch.Unity.dll</HintPath>
     </Reference>
     <Reference Include="Facepunch.UnityEngine">
-      <HintPath>RustBinaries\Facepunch.UnityEngine.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>lib\Facepunch.UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="Rust.Data">
-      <HintPath>RustBinaries\Rust.Data.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>lib\Rust.Data.dll</HintPath>
     </Reference>
     <Reference Include="Rust.Global">
-      <HintPath>RustBinaries\Rust.Global.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>lib\Rust.Global.dll</HintPath>
     </Reference>
     <Reference Include="Rust.UI">
-      <HintPath>RustBinaries\Rust.UI.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>lib\Rust.UI.dll</HintPath>
     </Reference>
     <Reference Include="Rust.Workshop">
-      <HintPath>RustBinaries\Rust.Workshop.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>lib\Rust.Workshop.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
     <Reference Include="UnityEngine">
-      <HintPath>RustBinaries\UnityEngine.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>lib\UnityEngine.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -108,25 +91,7 @@
     <Compile Include="Runtime\Startup.cs" />
     <Compile Include="Rust.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RustDependencyRegistrator.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Rocket\Rocket.API\Rocket.API.csproj">
-      <Project>{da356abb-aa77-4b22-9ab1-34a30cf4048a}</Project>
-      <Name>Rocket.API</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Rocket\Rocket.Compability\Rocket.Compability.csproj">
-      <Project>{01263b0d-9ce3-4d5a-afcb-165592ef24b5}</Project>
-      <Name>Rocket.Compability</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Rocket\Rocket.Core\Rocket.Core.csproj">
-      <Project>{a7056ab1-c5f5-493b-8e47-dc42de69961d}</Project>
-      <Name>Rocket.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Rocket\Rocket.Runtime\Rocket.Runtime.csproj">
-      <Project>{5d260f94-bb23-4397-94df-ba4af0cd8bcb}</Project>
-      <Name>Rocket.Runtime</Name>
-    </ProjectReference>
+    <Compile Include="Properties\RustDependencyRegistrator.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
