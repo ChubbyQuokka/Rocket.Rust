@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.API", "Rocket\Rocket
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Compability", "Rocket\Rocket.Compability\Rocket.Compability.csproj", "{01263B0D-9CE3-4D5A-AFCB-165592EF24B5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Rust.Launcher", "Rocket.Rust.Launcher\Rocket.Rust.Launcher.csproj", "{874365A1-FAF5-4B69-82DE-5A8D503AE077}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{01263B0D-9CE3-4D5A-AFCB-165592EF24B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{01263B0D-9CE3-4D5A-AFCB-165592EF24B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{01263B0D-9CE3-4D5A-AFCB-165592EF24B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{874365A1-FAF5-4B69-82DE-5A8D503AE077}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{874365A1-FAF5-4B69-82DE-5A8D503AE077}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{874365A1-FAF5-4B69-82DE-5A8D503AE077}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{874365A1-FAF5-4B69-82DE-5A8D503AE077}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
