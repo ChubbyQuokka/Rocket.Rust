@@ -15,7 +15,7 @@ namespace Rocket.Rust
         
         public void Load(IRuntime runtime)
         {
-            runtime.Container.Get<ILogger>().Info("Rocket.Eco has been intialize.");
+            runtime.Container.Get<ILogger>().Warning("Rocket.Rust has intialized.");
         }
 
         public void Reload()

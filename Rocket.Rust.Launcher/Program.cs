@@ -58,22 +58,35 @@ namespace Rocket.Rust.Launcher
             {
                 AssemblyDefinition rust = AssemblyDefinition.ReadAssembly(stream);
 
-                //TODO: Find a different method to attach to AFTER the console has been allocated. (only a Windows problem) (possible fix using Init_Tier0?)
-                MethodDefinition rustInit = rust.MainModule.Types.First(x => x.FullName.Equals("Bootstrap")).Methods.First(x => x.Name.Equals("NetworkInit"));
-                
-                if (rustInit.Body.Instructions[0].OpCode != OpCodes.Ldc_I4_0)
-                {
-                    ILProcessor processor = rustInit.Body.GetILProcessor();
+                //TODO: Fixed, solved by injecting into a coroutine
+                MethodDefinition rustInit = rust.MainModule.Types.First(x => x.FullName.Equals("Bootstrap")).NestedTypes.First(x => x.Name == "<StartServer>c__Iterator2").Methods.First(x => x.Name.Equals("MoveNext"));
 
+                //Create the ILProcessor
+                ILProcessor processor = rustInit.Body.GetILProcessor();
+
+                //Locate the point of injection
+                int index = default(int);
+                for (int i = 0; i < processor.Body.Instructions.Count; i++)
+                {
+                    if (processor.Body.Instructions[i].OpCode == OpCodes.Ldstr && processor.Body.Instructions[i].Operand as string == "Server startup complete")
+                    {
+                        index = i;
+                        break;
+                    }
+                }
+
+                if (rustInit.Body.Instructions[index - 1].OpCode != OpCodes.Pop)
+                {
                     //After trying 3,000 different ways to call it, I finally decided on reflection because of a weird AssemblyResolveException I was getting.
+
+                    //Create the entry-point instruction for later use.
+                    Instruction entry = processor.Create(OpCodes.Call, rustInit.Module.ImportReference(typeof(Directory).GetMethod("GetCurrentDirectory")));
+
+                    //Create the rest of the instructions.
                     Instruction[] loadRocketAssembly = new Instruction[]
                     {
-                        //Add a little "patched" signature.
-                        processor.Create(OpCodes.Ldc_I4_0),
-                        processor.Create(OpCodes.Pop),
-
                         //Add the strings to combine
-                        processor.Create(OpCodes.Call, rustInit.Module.ImportReference(typeof(Directory).GetMethod("GetCurrentDirectory"))),
+                        entry,
                         processor.Create(OpCodes.Ldstr, @"Rocket\Binaries\Rocket.Rust.dll"),
 
                         //Run Path.Combine
@@ -99,7 +112,7 @@ namespace Rocket.Rust.Launcher
                         processor.Create(OpCodes.Ldnull),
                         processor.Create(OpCodes.Ldnull),
 
-                        //Make the bootstrap call
+                        //Make the Initialize() call
                         processor.Create(OpCodes.Callvirt, rustInit.Module.ImportReference(typeof(MethodBase).GetMethod("Invoke", new Type[] { typeof(object), typeof(object[]) }))),
 
                         //Clear the object off the stack
@@ -132,22 +145,28 @@ namespace Rocket.Rust.Launcher
                         processor.Create(OpCodes.Ldnull),
                         processor.Create(OpCodes.Ldnull),
 
-                        //Make the bootstrap call
+                        //Make the Bootstrap() call
                         processor.Create(OpCodes.Callvirt, rustInit.Module.ImportReference(typeof(MethodBase).GetMethod("Invoke", new Type[] { typeof(object), typeof(object[]) }))),
 
                         //Clear the object off the stack
                         processor.Create(OpCodes.Pop)
-
                     };
 
+                    //Inject the reflection calls in the method body.
                     for (int i = 0; i < loadRocketAssembly.Length; i++)
                     {
-                        processor.InsertBefore(rustInit.Body.Instructions[i], loadRocketAssembly[i]);
+                        processor.InsertBefore(rustInit.Body.Instructions[index + i], loadRocketAssembly[i]);
                     }
 
+                    //Modify the breakpoint of an if statement that the method would be injected into and possibly fail.
+                    Instruction breakPoint = processor.Body.Instructions.Where(x => (x.OpCode == OpCodes.Brfalse) && x.Operand == processor.Body.Instructions[index + loadRocketAssembly.Length]).First();
+                    breakPoint.Operand = entry;
+
+                    //Create the backup directory.
                     string originalDir = Path.Combine(RocketDir, "Rust");
                     Directory.CreateDirectory(originalDir);
 
+                    //Write to patched assembly.
                     File.WriteAllBytes(Path.Combine(originalDir, "Assembly-CSharp.dll"), originalRust);
                     rust.Write((Path.Combine(RustDir, "Assembly-CSharp.dll")));
                 }
