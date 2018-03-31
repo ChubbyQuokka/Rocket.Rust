@@ -1,18 +1,59 @@
 ﻿using System;
+using System.Linq;
 
 using Rocket.API.Player;
 
 namespace Rocket.Rust.Player
 {
-    public class RustPlayer : IPlayer, IEquatable<ulong>, IComparable<ulong>
+    public class RustPlayer : IPlayer, IEquatable<ulong>, IComparable<ulong>, IEquatable<BasePlayer>, IComparable<BasePlayer>
     {
+        #region IPlayer Implementation
         public string UniqueID => CSteamID.ToString();
-        public ulong CSteamID { get; private set; }
+        public string DisplayName => Player.displayName;
+        public string IsAdmin => "";
+        //public bool IsAdmin => Player.IsAdmin;
+        #endregion
+            
+        public ulong CSteamID => Player.userID;
+        public readonly BasePlayer Player;
 
-        public string DisplayName => throw new NotImplementedException();
+        internal RustPlayer(BasePlayer player)
+        {
+            Player = player;
+        }
 
-        public string IsAdmin => throw new NotImplementedException();
+        #region Object Implementation
+        public override int GetHashCode()
+        {
+            return BitConverter.ToInt32(BitConverter.GetBytes(CSteamID).Reverse().Take(4).ToArray(), 0);
+        }
 
+        public override bool Equals(object obj)
+        {
+            Type type = obj.GetType();
+
+            if (type == typeof(IPlayer))
+            {
+                return Equals((IPlayer)obj);
+            }
+            else if (type == typeof(ulong))
+            {
+                return Equals((ulong)obj);
+            }
+            else if (type == typeof(string))
+            {
+                return Equals((string)obj);
+            }
+            else if (type == typeof(BasePlayer))
+            {
+                return Equals((BasePlayer)obj);
+            }
+
+            throw new ArgumentException($"Cannot equate {typeof(RustPlayer).Name} to {type.Name}!");
+        }
+        #endregion
+
+        #region IEquatable and IComparable Implementation
         public int CompareTo(IPlayer other)
         {
             return UniqueID.CompareTo(other.UniqueID);
@@ -42,5 +83,16 @@ namespace Rocket.Rust.Player
         {
             return UniqueID.Equals(other);
         }
+
+        public bool Equals(BasePlayer other)
+        {
+            return CSteamID.Equals(other.userID);
+        }
+
+        public int CompareTo(BasePlayer other)
+        {
+            return UniqueID.CompareTo(other.userID.ToString());
+        }
+#endregion
     }
 }
