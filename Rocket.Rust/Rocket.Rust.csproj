@@ -101,6 +101,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Player\PlayerTool.cs" />
     <Compile Include="Player\RustPlayer.cs" />
     <Compile Include="Rust.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -49,7 +49,7 @@ namespace Rocket.Rust.Player
                 return Equals((BasePlayer)obj);
             }
 
-            throw new ArgumentException($"Cannot equate {typeof(RustPlayer).Name} to {type.Name}!");
+            throw new ArgumentException($"Cannot equate the type \"{typeof(RustPlayer).Name}\" to \"{type.Name}\".");
         }
         #endregion
 
@@ -71,7 +71,7 @@ namespace Rocket.Rust.Player
 
         public int CompareTo(string other)
         {
-            return UniqueID.CompareTo(UniqueID);
+            return UniqueID.CompareTo(other);
         }
 
         public bool Equals(ulong other)
