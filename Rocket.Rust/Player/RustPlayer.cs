@@ -25,7 +25,7 @@ namespace Rocket.Rust.Player
         #region Object Implementation
         public override int GetHashCode()
         {
-            return BitConverter.ToInt32(BitConverter.GetBytes(CSteamID).Reverse().Take(4).ToArray(), 0);
+            return BitConverter.ToInt32(BitConverter.GetBytes(CSteamID), 4);
         }
 
         public override bool Equals(object obj)
