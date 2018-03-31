@@ -58,16 +58,20 @@ namespace Rocket.Rust.Launcher
             {
                 AssemblyDefinition rust = AssemblyDefinition.ReadAssembly(stream);
 
-                //TODO: Find a different method to attach to AFTER the console has been allocated. (only a Windows problem)
-                MethodDefinition rustInit = rust.MainModule.Types.First(x => x.FullName.Equals("Bootstrap")).Methods.First(x => x.Name.Equals("Init_Systems"));
-
-                if (rustInit.Body.Instructions[0].OpCode != OpCodes.Call)
+                //TODO: Find a different method to attach to AFTER the console has been allocated. (only a Windows problem) (possible fix using Init_Tier0?)
+                MethodDefinition rustInit = rust.MainModule.Types.First(x => x.FullName.Equals("Bootstrap")).Methods.First(x => x.Name.Equals("NetworkInit"));
+                
+                if (rustInit.Body.Instructions[0].OpCode != OpCodes.Ldc_I4_0)
                 {
                     ILProcessor processor = rustInit.Body.GetILProcessor();
 
                     //After trying 3,000 different ways to call it, I finally decided on reflection because of a weird AssemblyResolveException I was getting.
                     Instruction[] loadRocketAssembly = new Instruction[]
                     {
+                        //Add a little "patched" signature.
+                        processor.Create(OpCodes.Ldc_I4_0),
+                        processor.Create(OpCodes.Pop),
+
                         //Add the strings to combine
                         processor.Create(OpCodes.Call, rustInit.Module.ImportReference(typeof(Directory).GetMethod("GetCurrentDirectory"))),
                         processor.Create(OpCodes.Ldstr, @"Rocket\Binaries\Rocket.Rust.dll"),
@@ -75,7 +79,7 @@ namespace Rocket.Rust.Launcher
                         //Run Path.Combine
                         processor.Create(OpCodes.Call, rustInit.Module.ImportReference(typeof(Path).GetMethod("Combine", new Type[] { typeof(string), typeof(string)}))),
 
-                        //Load the Assembly using the combined path
+                        //Load the Rust.Rocket Assembly using the combined path
                         processor.Create(OpCodes.Call, rustInit.Module.ImportReference(typeof(Assembly).GetMethod("LoadFile", new Type[] { typeof(string) }))),
 
                         //Load type name for the type resolution
@@ -84,6 +88,39 @@ namespace Rocket.Rust.Launcher
 
                         //Load method name for the method resolation call
                         processor.Create(OpCodes.Ldstr, "Initialize"),
+
+                        //Load 40 for the method resolution (BindingFlags.Static | BindingFlags.NonPublic)
+                        processor.Create(OpCodes.Ldc_I4_S, (sbyte)40),
+
+                        //Load the target method for the reflection call
+                        processor.Create(OpCodes.Callvirt, rustInit.Module.ImportReference(typeof(Type).GetMethod("GetMethod", new Type[] { typeof(string), typeof(BindingFlags) }))),
+
+                        //Load two null values for the reflection call
+                        processor.Create(OpCodes.Ldnull),
+                        processor.Create(OpCodes.Ldnull),
+
+                        //Make the bootstrap call
+                        processor.Create(OpCodes.Callvirt, rustInit.Module.ImportReference(typeof(MethodBase).GetMethod("Invoke", new Type[] { typeof(object), typeof(object[]) }))),
+
+                        //Clear the object off the stack
+                        processor.Create(OpCodes.Pop),
+
+                        //Add the strings to combine
+                        processor.Create(OpCodes.Call, rustInit.Module.ImportReference(typeof(Directory).GetMethod("GetCurrentDirectory"))),
+                        processor.Create(OpCodes.Ldstr, @"Rocket\Binaries\Rocket.Runtime.dll"),
+
+                        //Run Path.Combine
+                        processor.Create(OpCodes.Call, rustInit.Module.ImportReference(typeof(Path).GetMethod("Combine", new Type[] { typeof(string), typeof(string)}))),
+
+                        //Load the Rust.Runtime Assembly using the combined path
+                        processor.Create(OpCodes.Call, rustInit.Module.ImportReference(typeof(Assembly).GetMethod("LoadFile", new Type[] { typeof(string) }))),
+
+                        //Load type name for the type resolution
+                        processor.Create(OpCodes.Ldstr, "Rocket.Runtime"),
+                        processor.Create(OpCodes.Callvirt, rustInit.Module.ImportReference(typeof(Assembly).GetMethod("GetType", new Type[]{ typeof(string) }))),
+
+                        //Load method name for the method resolation call
+                        processor.Create(OpCodes.Ldstr, "Bootstrap"),
 
                         //Load 24 for the method resolution (BindingFlags.Static | BindingFlags.Public)
                         processor.Create(OpCodes.Ldc_I4_S, (sbyte)24),
@@ -95,10 +132,10 @@ namespace Rocket.Rust.Launcher
                         processor.Create(OpCodes.Ldnull),
                         processor.Create(OpCodes.Ldnull),
 
-                        //Make that fucking reflection call
+                        //Make the bootstrap call
                         processor.Create(OpCodes.Callvirt, rustInit.Module.ImportReference(typeof(MethodBase).GetMethod("Invoke", new Type[] { typeof(object), typeof(object[]) }))),
 
-                        //Get that ugly object reference out of my stack
+                        //Clear the object off the stack
                         processor.Create(OpCodes.Pop)
 
                     };

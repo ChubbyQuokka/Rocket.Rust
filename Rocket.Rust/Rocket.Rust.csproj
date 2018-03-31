@@ -107,6 +107,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Logging\UnityLogger.cs" />
     <Compile Include="Player\RustPlayerManager.cs" />
     <Compile Include="Player\RustPlayer.cs" />
     <Compile Include="Runtime\Startup.cs" />

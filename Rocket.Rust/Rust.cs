@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using Rocket.API;
+using ILogger = Rocket.API.Logging.ILogger;
 
 using UnityEngine;
 
@@ -14,7 +15,7 @@ namespace Rocket.Rust
         
         public void Load(IRuntime runtime)
         {
-            
+            runtime.Container.Get<ILogger>().Info("Rocket.Eco has been intialize.");
         }
 
         public void Reload()
